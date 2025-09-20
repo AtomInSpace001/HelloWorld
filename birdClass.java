@@ -1,4 +1,4 @@
-public class bird {
+public class Bird {
     String color;
     String location;
     int size;

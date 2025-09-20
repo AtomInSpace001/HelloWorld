@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bird Info</title>
+</head>
+<body>
+  <h2>Add Bird Info</h2>
+  <form id="birdForm">
+    <input type="text" id="name" placeholder="Bird Name" required>
+    <input type="text" id="color" placeholder="Bird Color" required>
+    <button type="submit">Add Bird</button>
+  </form>
+
+  <script>
+    document.getElementById("birdForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const color = document.getElementById("color").value;
+
+      await fetch("http://localhost:8080/birds", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, color })
+      });
+      alert("Bird added!");
+    });
+  </script>
+</body>
+</html>
