@@ -13,7 +13,7 @@ color(
     "Orange"
 )
 size(
-
+    
 )
 
 Activities(
