@@ -1,8 +1,21 @@
 # HelloWorld
 date: 
 location: 
-color:
-size:
+color(
+    "Black"
+    "Gray"
+    "White"
+    "Brown"
+    "Red"
+    "Yellow"
+    "Green"
+    "Blue"
+    "Orange"
+)
+size(
+
+)
+
 Activities(
     "Eating at a feeder"
     "On the ground"
