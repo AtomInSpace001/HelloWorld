@@ -18,7 +18,7 @@ public class BirdApp {
     @PostMapping("/birds")
     public String addBird(@RequestBody Bird bird) {
         birds.add(bird);
-        return "Bird added";
+        return "Bird added" + bird.getActivity();
     }
 
     @GetMapping("/birds")
@@ -26,4 +26,3 @@ public class BirdApp {
         return birds;
     }
 }
-
