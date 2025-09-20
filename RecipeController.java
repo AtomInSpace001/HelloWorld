@@ -3,6 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin; 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ public class RecipeController {
     private final String geminiApiKey = "AIzaSyBPdVdySoWsjAmBkSFUBbIWvb5q6sBSzyM";
     private final String geminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + geminiApiKey;
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/get-recipe")
     public String getRecipe(@RequestParam String ingredients) {
         try {
@@ -59,6 +61,7 @@ public class RecipeController {
     }
 
     // You will need another endpoint for the streak feature later
+    @CrossOrigin(origins = "*")
     @GetMapping("/made-it")
     public String madeRecipe() {
         String userId = "user123";
