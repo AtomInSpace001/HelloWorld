@@ -18,7 +18,7 @@ public class RecipeController {
     private final Map<String, String> userRecipeCache = new HashMap<>();
 
     // IMPORTANT: Replace "YOUR_API_KEY" with the key you just generated!
-    private final String geminiApiKey = "YOUR_API_KEY";
+    private final String geminiApiKey = "AIzaSyBPdVdySoWsjAmBkSFUBbIWvb5q6sBSzyM";
     private final String geminiApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + geminiApiKey;
 
     @GetMapping("/get-recipe")
