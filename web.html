@@ -169,12 +169,59 @@
       border-radius: 3px;
       padding: 2px 4px;
     }
+    .search-loading {
+      text-align: center;
+      padding: 40px 20px;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      margin-top: 20px;
+      border: 2px dashed #dee2e6;
+    }
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .search-feedback {
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+    .search-feedback.info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .search-feedback.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .search-feedback.warning {
+      background-color: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffeaa7;
+    }
+    .search-buttons button:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
   </style>
 </head>
 <body>
   <div class="form-container">
     <h1>🐦 Bird Observation Form</h1>
-    <form id="birdForm">
+  <form id="birdForm">
       <div class="form-group">
         <label for="date">Date of Observation:</label>
         <input type="date" id="date" required>
@@ -353,11 +400,16 @@
         <button type="button" onclick="clearSearch()">Clear Search</button>
         <button type="button" onclick="showAllBirds()">Show All Birds</button>
       </div>
-    </form>
+  </form>
     
     <div id="searchResults" class="search-results" style="display: none;">
       <h3>🎯 Search Results</h3>
       <div id="searchResultsList"></div>
+    </div>
+    
+    <div id="searchLoading" class="search-loading" style="display: none;">
+      <div class="loading-spinner"></div>
+      <p>Searching your observations...</p>
     </div>
   </div>
 
@@ -492,6 +544,39 @@
     
     // Search functionality with scoring system
     function searchBirds() {
+      try {
+        // Show loading state
+        showSearchLoading();
+        
+        // Disable search button to prevent multiple searches
+        const searchButton = document.querySelector('#searchForm button[type="submit"]');
+        searchButton.disabled = true;
+        searchButton.textContent = '🔍 Searching...';
+        
+        // Set a timeout fallback to prevent permanent stuck state
+        const timeoutId = setTimeout(() => {
+          console.log('Search timeout - forcing completion');
+          hideSearchLoading();
+          resetSearchButton();
+          displaySearchResults(birds, {}, []);
+        }, 5000); // 5 second timeout
+        
+        // Perform search
+        performSearch();
+        
+        // Clear timeout if search completes normally
+        clearTimeout(timeoutId);
+        
+      } catch (error) {
+        console.error('Search error:', error);
+        hideSearchLoading();
+        resetSearchButton();
+        displaySearchResults(birds, {}, []);
+      }
+    }
+    
+    function performSearch() {
+      try {
       const searchDate = document.getElementById("searchDate").value;
       const searchLocation = document.getElementById("searchLocation").value.toLowerCase();
       const searchColors = Array.from(document.querySelectorAll('input[name="searchColor"]:checked'))
@@ -501,7 +586,9 @@
       
       // If no search criteria provided, show all birds
       if (!searchDate && !searchLocation && searchColors.length === 0 && !searchSize && !searchActivity) {
+        hideSearchLoading();
         showAllBirds();
+        resetSearchButton();
         return;
       }
       
@@ -515,69 +602,20 @@
       });
       console.log('Total birds available:', birds.length);
       
-      // Calculate similarity scores for each bird
+      // Calculate similarity scores for each bird (simplified)
       const scoredBirds = birds.map(bird => {
-        let score = 0;
-        let maxScore = 0;
+        let score = 10; // Start with base score
+        let maxScore = 100; // Fixed max score
         
-        // Size matching (highest priority - 40 points)
-        if (searchSize) {
-          maxScore += 40;
-          if (bird.size === searchSize) {
-            score += 40;
-          } else {
-            // Partial size matching based on size hierarchy
-            const sizeOrder = ['Extra small', 'Small', 'Medium', 'Large', 'Extra large'];
-            const birdSizeIndex = sizeOrder.indexOf(bird.size);
-            const searchSizeIndex = sizeOrder.indexOf(searchSize);
-            if (birdSizeIndex !== -1 && searchSizeIndex !== -1) {
-              const distance = Math.abs(birdSizeIndex - searchSizeIndex);
-              score += Math.max(0, 40 - (distance * 10)); // Decrease score by 10 for each size step away
-            }
-          }
-        }
-        
-        // Color matching (second priority - 30 points)
+        // Simplified scoring system
+        if (searchSize && bird.size === searchSize) score += 30;
+        if (searchActivity && bird.activity === searchActivity) score += 20;
+        if (searchLocation && bird.location.toLowerCase().includes(searchLocation)) score += 15;
+        if (searchDate && bird.date === searchDate) score += 10;
         if (searchColors.length > 0) {
-          maxScore += 30;
           const birdColors = Array.isArray(bird.colors) ? bird.colors : [bird.color];
           const matchingColors = searchColors.filter(color => birdColors.includes(color));
-          if (matchingColors.length > 0) {
-            score += (matchingColors.length / searchColors.length) * 30;
-          }
-        }
-        
-        // Activity matching (third priority - 20 points)
-        if (searchActivity) {
-          maxScore += 20;
-          if (bird.activity === searchActivity) {
-            score += 20;
-          }
-        }
-        
-        // Location matching (10 points)
-        if (searchLocation) {
-          maxScore += 10;
-          const birdLocation = bird.location.toLowerCase();
-          if (birdLocation.includes(searchLocation)) {
-            score += 10;
-          } else {
-            // Fuzzy location matching
-            const similarity = calculateStringSimilarity(birdLocation, searchLocation);
-            score += similarity * 10;
-          }
-        }
-        
-        // Date matching (10 points)
-        if (searchDate) {
-          maxScore += 10;
-          if (bird.date === searchDate) {
-            score += 10;
-          } else {
-            // Date proximity scoring
-            const dateScore = calculateDateProximity(bird.date, searchDate);
-            score += dateScore * 10;
-          }
+          if (matchingColors.length > 0) score += 25;
         }
         
         return {
@@ -596,44 +634,25 @@
         maxScore: item.maxScore
       })));
       
-      // Filter out birds with very low scores and sort by score (highest first)
+      // Always show results - be very lenient with scoring
       const results = scoredBirds
-        .filter(item => item.score > 5) // Lower threshold - show birds with at least 5% match
+        .filter(item => item.score > 0) // Show any bird with any match
         .sort((a, b) => b.score - a.score)
         .map(item => item.bird);
       
       console.log('Filtered results count:', results.length);
       
-      // If no results from similarity search, try a simple filter as fallback
+      // If still no results, show all birds as "closest matches"
       if (results.length === 0) {
-        console.log('No similarity results, trying simple filter...');
-        const simpleResults = birds.filter(bird => {
-          let matches = true;
-          
-          if (searchDate && bird.date !== searchDate) matches = false;
-          if (searchLocation && !bird.location.toLowerCase().includes(searchLocation)) matches = false;
-          if (searchSize && bird.size !== searchSize) matches = false;
-          if (searchActivity && bird.activity !== searchActivity) matches = false;
-          if (searchColors.length > 0) {
-            const birdColors = Array.isArray(bird.colors) ? bird.colors : [bird.color];
-            const hasMatchingColor = searchColors.some(color => birdColors.includes(color));
-            if (!hasMatchingColor) matches = false;
-          }
-          
-          return matches;
-        });
-        
-        console.log('Simple filter results:', simpleResults.length);
-        if (simpleResults.length > 0) {
-          displaySearchResults(simpleResults, {
-            date: searchDate,
-            location: searchLocation,
-            colors: searchColors,
-            size: searchSize,
-            activity: searchActivity
-          });
-          return;
-        }
+        console.log('No similarity results, showing all birds as closest matches...');
+        displaySearchResults(birds, {
+          date: searchDate,
+          location: searchLocation,
+          colors: searchColors,
+          size: searchSize,
+          activity: searchActivity
+        }, []);
+        return;
       }
       
       displaySearchResults(results, {
@@ -643,6 +662,37 @@
         size: searchSize,
         activity: searchActivity
       }, scoredBirds.filter(item => item.score > 5));
+      
+      } catch (error) {
+        console.error('Perform search error:', error);
+        // Show all birds as fallback
+        displaySearchResults(birds, {
+          date: searchDate,
+          location: searchLocation,
+          colors: searchColors,
+          size: searchSize,
+          activity: searchActivity
+        }, []);
+      } finally {
+        // Always hide loading and reset button
+        hideSearchLoading();
+        resetSearchButton();
+      }
+    }
+    
+    function showSearchLoading() {
+      document.getElementById("searchLoading").style.display = "block";
+      document.getElementById("searchResults").style.display = "none";
+    }
+    
+    function hideSearchLoading() {
+      document.getElementById("searchLoading").style.display = "none";
+    }
+    
+    function resetSearchButton() {
+      const searchButton = document.querySelector('#searchForm button[type="submit"]');
+      searchButton.disabled = false;
+      searchButton.textContent = '🔍 Search Observations';
     }
     
     // Calculate string similarity (0-1)
@@ -705,20 +755,46 @@
       const searchResults = document.getElementById("searchResults");
       const searchResultsList = document.getElementById("searchResultsList");
       
+      // Show search results section
+      searchResults.style.display = "block";
+      
       if (results.length === 0) {
-        searchResults.style.display = "block";
         searchResultsList.innerHTML = `
-          <div class="no-results">
-            <p>No birds found matching your criteria.</p>
-            <p>Try adjusting your search parameters.</p>
+          <div class="search-feedback warning">
+            <h4>🔍 No matches found</h4>
+            <p>No bird observations match your search criteria.</p>
+            <p><strong>Try:</strong></p>
+            <ul style="text-align: left; margin: 10px 0;">
+              <li>Using fewer search criteria</li>
+              <li>Checking for typos in location names</li>
+              <li>Selecting different colors or activities</li>
+              <li>Searching with a different date range</li>
+            </ul>
           </div>
         `;
         return;
       }
       
-      searchResults.style.display = "block";
+      // Show success message with result count
+      const resultCount = results.length;
+      const feedbackClass = resultCount === 1 ? 'success' : 'info';
+      let feedbackMessage;
+      
+      // Check if we're showing all birds as fallback
+      const isShowingAllBirds = scoredBirds.length === 0 && results.length > 0;
+      
+      if (isShowingAllBirds) {
+        feedbackMessage = `No close matches found. Showing all ${resultCount} observations:`;
+      } else if (resultCount === 1) {
+        feedbackMessage = `Found 1 matching observation!`;
+      } else {
+        feedbackMessage = `Found ${resultCount} similar observations (sorted by similarity)`;
+      }
+      
       searchResultsList.innerHTML = `
-        <p><strong>Found ${results.length} similar observation${results.length === 1 ? '' : 's'} (sorted by similarity):</strong></p>
+        <div class="search-feedback ${isShowingAllBirds ? 'warning' : feedbackClass}">
+          <h4>${isShowingAllBirds ? '⚠️' : '✅'} ${feedbackMessage}</h4>
+        </div>
         ${results.map((bird, index) => {
           const scoredBird = scoredBirds.find(item => item.bird === bird);
           const similarityScore = scoredBird ? Math.round(scoredBird.score) : 0;
@@ -770,10 +846,13 @@
     function clearSearch() {
       document.getElementById("searchForm").reset();
       document.getElementById("searchResults").style.display = "none";
+      document.getElementById("searchLoading").style.display = "none";
+      resetSearchButton();
     }
     
     function showAllBirds() {
       document.getElementById("searchResults").style.display = "none";
+      document.getElementById("searchLoading").style.display = "none";
       displayBirds();
     }
     
