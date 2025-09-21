@@ -13,6 +13,11 @@ color(
     "Orange"
 )
 size(
+    "Extra small"
+    "Small"
+    "Medium"
+    "Large"
+    "Extra large"
     
 )
 

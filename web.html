@@ -1,29 +1,790 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Bird Info</title>
+  <title>Bird Observation Form</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .form-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #34495e;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    .bird-list {
+      margin-top: 30px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .bird-item {
+      background-color: #ecf0f1;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border-left: 4px solid #3498db;
+    }
+    .clear-btn {
+      background-color: #e74c3c;
+      margin-top: 10px;
+    }
+    .clear-btn:hover {
+      background-color: #c0392b;
+    }
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      padding: 8px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .checkbox-label:hover {
+      background-color: #f8f9fa;
+      border-color: #3498db;
+    }
+    .checkbox-label input[type="checkbox"] {
+      width: auto;
+      margin-right: 8px;
+    }
+    .color-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      margin-right: 8px;
+      display: inline-block;
+    }
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .image-preview img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+      border: 2px solid #ddd;
+    }
+    .bird-item img {
+      max-width: 150px;
+      max-height: 150px;
+      object-fit: cover;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    small {
+      color: #666;
+      font-size: 12px;
+    }
+    .search-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin-top: 20px;
+    }
+    .search-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .search-buttons button {
+      flex: 1;
+      min-width: 150px;
+    }
+    .search-results {
+      margin-top: 20px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      border-left: 4px solid #28a745;
+    }
+    .search-results h3 {
+      margin-top: 0;
+      color: #28a745;
+    }
+    .no-results {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 20px;
+    }
+    .match-highlight {
+      background-color: #fff3cd;
+      border: 1px solid #ffeaa7;
+      border-radius: 3px;
+      padding: 2px 4px;
+    }
+  </style>
 </head>
 <body>
-  <h2>Add Bird Info</h2>
-  <form id="birdForm">
-    <input type="text" id="activity" placeholder="activity" required>
-    <input type="text" id="color" placeholder="Bird Color" required>
-    <button type="submit">Add Bird</button>
-  </form>
+  <div class="form-container">
+    <h1>🐦 Bird Observation Form</h1>
+    <form id="birdForm">
+      <div class="form-group">
+        <label for="date">Date of Observation:</label>
+        <input type="date" id="date" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Location:</label>
+        <input type="text" id="location" placeholder="Where did you see the bird?" required>
+      </div>
+      
+      <div class="form-group">
+        <label>Bird Colors (select all that apply):</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="Black">
+            <span class="color-box" style="background-color: #000;"></span> Black
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="Gray">
+            <span class="color-box" style="background-color: #808080;"></span> Gray
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="White">
+            <span class="color-box" style="background-color: #fff; border: 1px solid #ccc;"></span> White
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="Brown">
+            <span class="color-box" style="background-color: #8B4513;"></span> Brown
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="Red">
+            <span class="color-box" style="background-color: #FF0000;"></span> Red
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="Yellow">
+            <span class="color-box" style="background-color: #FFFF00;"></span> Yellow
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="Green">
+            <span class="color-box" style="background-color: #008000;"></span> Green
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="Blue">
+            <span class="color-box" style="background-color: #0000FF;"></span> Blue
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="color" value="Orange">
+            <span class="color-box" style="background-color: #FFA500;"></span> Orange
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="size">Bird Size:</label>
+        <select id="size" required>
+          <option value="">Select a size</option>
+          <option value="Extra small">Extra small</option>
+          <option value="Small">Small</option>
+          <option value="Medium">Medium</option>
+          <option value="Large">Large</option>
+          <option value="Extra large">Extra large</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="activity">Activity:</label>
+        <select id="activity" required>
+          <option value="">Select an activity</option>
+          <option value="Eating at a feeder">Eating at a feeder</option>
+          <option value="On the ground">On the ground</option>
+          <option value="In trees or bushes">In trees or bushes</option>
+          <option value="Swimming or wading">Swimming or wading</option>
+          <option value="On a fence or wire">On a fence or wire</option>
+          <option value="Soaring or flying">Soaring or flying</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="notes">Additional Notes:</label>
+        <textarea id="notes" placeholder="Any additional observations about the bird..." rows="3"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="images">Upload Images (optional):</label>
+        <input type="file" id="images" accept="image/*" multiple>
+        <small>You can select multiple images at once</small>
+        <div id="imagePreview" class="image-preview"></div>
+      </div>
+      
+      <button type="submit">Add Bird Observation</button>
+    </form>
+  </div>
+
+  <div class="search-container">
+    <h2>🔍 Search Your Bird Observations</h2>
+    <form id="searchForm">
+      <div class="form-group">
+        <label for="searchDate">Date:</label>
+        <input type="date" id="searchDate">
+      </div>
+      
+      <div class="form-group">
+        <label for="searchLocation">Location:</label>
+        <input type="text" id="searchLocation" placeholder="Search by location...">
+      </div>
+      
+      <div class="form-group">
+        <label>Colors (select any to filter):</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="Black">
+            <span class="color-box" style="background-color: #000;"></span> Black
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="Gray">
+            <span class="color-box" style="background-color: #808080;"></span> Gray
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="White">
+            <span class="color-box" style="background-color: #fff; border: 1px solid #ccc;"></span> White
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="Brown">
+            <span class="color-box" style="background-color: #8B4513;"></span> Brown
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="Red">
+            <span class="color-box" style="background-color: #FF0000;"></span> Red
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="Yellow">
+            <span class="color-box" style="background-color: #FFFF00;"></span> Yellow
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="Green">
+            <span class="color-box" style="background-color: #008000;"></span> Green
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="Blue">
+            <span class="color-box" style="background-color: #0000FF;"></span> Blue
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" name="searchColor" value="Orange">
+            <span class="color-box" style="background-color: #FFA500;"></span> Orange
+          </label>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="searchSize">Size:</label>
+        <select id="searchSize">
+          <option value="">Any size</option>
+          <option value="Extra small">Extra small</option>
+          <option value="Small">Small</option>
+          <option value="Medium">Medium</option>
+          <option value="Large">Large</option>
+          <option value="Extra large">Extra large</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="searchActivity">Activity:</label>
+        <select id="searchActivity">
+          <option value="">Any activity</option>
+          <option value="Eating at a feeder">Eating at a feeder</option>
+          <option value="On the ground">On the ground</option>
+          <option value="In trees or bushes">In trees or bushes</option>
+          <option value="Swimming or wading">Swimming or wading</option>
+          <option value="On a fence or wire">On a fence or wire</option>
+          <option value="Soaring or flying">Soaring or flying</option>
+        </select>
+      </div>
+      
+      <div class="search-buttons">
+        <button type="submit">🔍 Search Observations</button>
+        <button type="button" onclick="clearSearch()">Clear Search</button>
+        <button type="button" onclick="showAllBirds()">Show All Birds</button>
+      </div>
+    </form>
+    
+    <div id="searchResults" class="search-results" style="display: none;">
+      <h3>🎯 Search Results</h3>
+      <div id="searchResultsList"></div>
+    </div>
+  </div>
+
+  <div class="bird-list" id="birdList" style="display: none;">
+    <h2>🐦 Your Bird Observations</h2>
+    <div id="birdItems"></div>
+    <button class="clear-btn" onclick="clearAllBirds()">Clear All Observations</button>
+  </div>
 
   <script>
+    // Store birds locally in browser
+    let birds = JSON.parse(localStorage.getItem('birds') || '[]');
+    
+    // Format date to Month Day, Year
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return date.toLocaleDateString('en-US', options);
+    }
+    
+    // Display existing birds
+    function displayBirds() {
+      const birdList = document.getElementById('birdList');
+      const birdItems = document.getElementById('birdItems');
+      
+      if (birds.length === 0) {
+        birdList.style.display = 'none';
+        return;
+      }
+      
+      birdList.style.display = 'block';
+      birdItems.innerHTML = birds.map((bird, index) => `
+        <div class="bird-item">
+          <strong>Observation #${index + 1}</strong><br>
+          <strong>Date:</strong> ${formatDate(bird.date)}<br>
+          <strong>Location:</strong> ${bird.location}<br>
+          <strong>Colors:</strong> ${Array.isArray(bird.colors) ? bird.colors.join(', ') : bird.color || 'N/A'}<br>
+          <strong>Size:</strong> ${bird.size}<br>
+          <strong>Activity:</strong> ${bird.activity}<br>
+          ${bird.notes ? `<strong>Notes:</strong> ${bird.notes}` : ''}
+          ${bird.images && bird.images.length > 0 ? `
+            <br><strong>Images:</strong><br>
+            ${bird.images.map(img => `<img src="${img}" alt="Bird observation image">`).join('')}
+          ` : ''}
+        </div>
+      `).join('');
+    }
+    
+    // Handle image preview
+    document.getElementById("images").addEventListener("change", function(e) {
+      const preview = document.getElementById("imagePreview");
+      preview.innerHTML = "";
+      
+      Array.from(e.target.files).forEach(file => {
+        if (file.type.startsWith("image/")) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            preview.appendChild(img);
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+
+    // Convert File to base64
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+
     document.getElementById("birdForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const activity = document.getElementById("activity").value;
-      const color = document.getElementById("color").value;
-
-      await fetch("http://localhost:8080/birds", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ activity, color })
-      });
-      alert("Bird added!");
+      
+      // Get selected colors
+      const selectedColors = Array.from(document.querySelectorAll('input[name="color"]:checked'))
+        .map(checkbox => checkbox.value);
+      
+      if (selectedColors.length === 0) {
+        alert("Please select at least one color!");
+        return;
+      }
+      
+      // Handle images
+      const imageFiles = Array.from(document.getElementById("images").files);
+      let imageData = [];
+      
+      if (imageFiles.length > 0) {
+        try {
+          imageData = await Promise.all(imageFiles.map(file => fileToBase64(file)));
+        } catch (error) {
+          alert("Error processing images. Please try again.");
+          return;
+        }
+      }
+      
+      const bird = {
+        date: document.getElementById("date").value,
+        location: document.getElementById("location").value,
+        colors: selectedColors,
+        size: document.getElementById("size").value,
+        activity: document.getElementById("activity").value,
+        notes: document.getElementById("notes").value,
+        images: imageData
+      };
+      
+      // Add bird to local storage
+      birds.push(bird);
+      localStorage.setItem('birds', JSON.stringify(birds));
+      
+      // Clear form and update display
+      document.getElementById("birdForm").reset();
+      document.getElementById("imagePreview").innerHTML = "";
+      displayBirds();
+      alert("Bird observation added successfully! 🐦");
     });
+    
+    function clearAllBirds() {
+      if (confirm("Are you sure you want to clear all bird observations?")) {
+        birds = [];
+        localStorage.setItem('birds', JSON.stringify(birds));
+        displayBirds();
+        alert("All observations cleared!");
+      }
+    }
+    
+    // Search functionality with scoring system
+    function searchBirds() {
+      const searchDate = document.getElementById("searchDate").value;
+      const searchLocation = document.getElementById("searchLocation").value.toLowerCase();
+      const searchColors = Array.from(document.querySelectorAll('input[name="searchColor"]:checked'))
+        .map(checkbox => checkbox.value);
+      const searchSize = document.getElementById("searchSize").value;
+      const searchActivity = document.getElementById("searchActivity").value;
+      
+      // If no search criteria provided, show all birds
+      if (!searchDate && !searchLocation && searchColors.length === 0 && !searchSize && !searchActivity) {
+        showAllBirds();
+        return;
+      }
+      
+      // Debug: Log search criteria
+      console.log('Search criteria:', {
+        date: searchDate,
+        location: searchLocation,
+        colors: searchColors,
+        size: searchSize,
+        activity: searchActivity
+      });
+      console.log('Total birds available:', birds.length);
+      
+      // Calculate similarity scores for each bird
+      const scoredBirds = birds.map(bird => {
+        let score = 0;
+        let maxScore = 0;
+        
+        // Size matching (highest priority - 40 points)
+        if (searchSize) {
+          maxScore += 40;
+          if (bird.size === searchSize) {
+            score += 40;
+          } else {
+            // Partial size matching based on size hierarchy
+            const sizeOrder = ['Extra small', 'Small', 'Medium', 'Large', 'Extra large'];
+            const birdSizeIndex = sizeOrder.indexOf(bird.size);
+            const searchSizeIndex = sizeOrder.indexOf(searchSize);
+            if (birdSizeIndex !== -1 && searchSizeIndex !== -1) {
+              const distance = Math.abs(birdSizeIndex - searchSizeIndex);
+              score += Math.max(0, 40 - (distance * 10)); // Decrease score by 10 for each size step away
+            }
+          }
+        }
+        
+        // Color matching (second priority - 30 points)
+        if (searchColors.length > 0) {
+          maxScore += 30;
+          const birdColors = Array.isArray(bird.colors) ? bird.colors : [bird.color];
+          const matchingColors = searchColors.filter(color => birdColors.includes(color));
+          if (matchingColors.length > 0) {
+            score += (matchingColors.length / searchColors.length) * 30;
+          }
+        }
+        
+        // Activity matching (third priority - 20 points)
+        if (searchActivity) {
+          maxScore += 20;
+          if (bird.activity === searchActivity) {
+            score += 20;
+          }
+        }
+        
+        // Location matching (10 points)
+        if (searchLocation) {
+          maxScore += 10;
+          const birdLocation = bird.location.toLowerCase();
+          if (birdLocation.includes(searchLocation)) {
+            score += 10;
+          } else {
+            // Fuzzy location matching
+            const similarity = calculateStringSimilarity(birdLocation, searchLocation);
+            score += similarity * 10;
+          }
+        }
+        
+        // Date matching (10 points)
+        if (searchDate) {
+          maxScore += 10;
+          if (bird.date === searchDate) {
+            score += 10;
+          } else {
+            // Date proximity scoring
+            const dateScore = calculateDateProximity(bird.date, searchDate);
+            score += dateScore * 10;
+          }
+        }
+        
+        return {
+          bird: bird,
+          score: maxScore > 0 ? (score / maxScore) * 100 : 0,
+          rawScore: score,
+          maxScore: maxScore
+        };
+      });
+      
+      // Debug: Log all scores
+      console.log('All bird scores:', scoredBirds.map(item => ({
+        bird: item.bird.location + ' - ' + item.bird.size,
+        score: item.score,
+        rawScore: item.rawScore,
+        maxScore: item.maxScore
+      })));
+      
+      // Filter out birds with very low scores and sort by score (highest first)
+      const results = scoredBirds
+        .filter(item => item.score > 5) // Lower threshold - show birds with at least 5% match
+        .sort((a, b) => b.score - a.score)
+        .map(item => item.bird);
+      
+      console.log('Filtered results count:', results.length);
+      
+      // If no results from similarity search, try a simple filter as fallback
+      if (results.length === 0) {
+        console.log('No similarity results, trying simple filter...');
+        const simpleResults = birds.filter(bird => {
+          let matches = true;
+          
+          if (searchDate && bird.date !== searchDate) matches = false;
+          if (searchLocation && !bird.location.toLowerCase().includes(searchLocation)) matches = false;
+          if (searchSize && bird.size !== searchSize) matches = false;
+          if (searchActivity && bird.activity !== searchActivity) matches = false;
+          if (searchColors.length > 0) {
+            const birdColors = Array.isArray(bird.colors) ? bird.colors : [bird.color];
+            const hasMatchingColor = searchColors.some(color => birdColors.includes(color));
+            if (!hasMatchingColor) matches = false;
+          }
+          
+          return matches;
+        });
+        
+        console.log('Simple filter results:', simpleResults.length);
+        if (simpleResults.length > 0) {
+          displaySearchResults(simpleResults, {
+            date: searchDate,
+            location: searchLocation,
+            colors: searchColors,
+            size: searchSize,
+            activity: searchActivity
+          });
+          return;
+        }
+      }
+      
+      displaySearchResults(results, {
+        date: searchDate,
+        location: searchLocation,
+        colors: searchColors,
+        size: searchSize,
+        activity: searchActivity
+      }, scoredBirds.filter(item => item.score > 5));
+    }
+    
+    // Calculate string similarity (0-1)
+    function calculateStringSimilarity(str1, str2) {
+      const longer = str1.length > str2.length ? str1 : str2;
+      const shorter = str1.length > str2.length ? str2 : str1;
+      
+      if (longer.length === 0) return 1.0;
+      
+      const editDistance = levenshteinDistance(longer, shorter);
+      return (longer.length - editDistance) / longer.length;
+    }
+    
+    // Levenshtein distance calculation
+    function levenshteinDistance(str1, str2) {
+      const matrix = [];
+      
+      for (let i = 0; i <= str2.length; i++) {
+        matrix[i] = [i];
+      }
+      
+      for (let j = 0; j <= str1.length; j++) {
+        matrix[0][j] = j;
+      }
+      
+      for (let i = 1; i <= str2.length; i++) {
+        for (let j = 1; j <= str1.length; j++) {
+          if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+            matrix[i][j] = matrix[i - 1][j - 1];
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j - 1] + 1,
+              matrix[i][j - 1] + 1,
+              matrix[i - 1][j] + 1
+            );
+          }
+        }
+      }
+      
+      return matrix[str2.length][str1.length];
+    }
+    
+    // Calculate date proximity score (0-1)
+    function calculateDateProximity(date1, date2) {
+      const d1 = new Date(date1);
+      const d2 = new Date(date2);
+      const diffTime = Math.abs(d2 - d1);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      // Score decreases as days apart increase
+      if (diffDays === 0) return 1.0;
+      if (diffDays <= 7) return 0.8;   // Within a week
+      if (diffDays <= 30) return 0.6;  // Within a month
+      if (diffDays <= 90) return 0.4;  // Within 3 months
+      if (diffDays <= 365) return 0.2; // Within a year
+      return 0.1; // More than a year
+    }
+    
+    function displaySearchResults(results, searchCriteria, scoredBirds = []) {
+      const searchResults = document.getElementById("searchResults");
+      const searchResultsList = document.getElementById("searchResultsList");
+      
+      if (results.length === 0) {
+        searchResults.style.display = "block";
+        searchResultsList.innerHTML = `
+          <div class="no-results">
+            <p>No birds found matching your criteria.</p>
+            <p>Try adjusting your search parameters.</p>
+          </div>
+        `;
+        return;
+      }
+      
+      searchResults.style.display = "block";
+      searchResultsList.innerHTML = `
+        <p><strong>Found ${results.length} similar observation${results.length === 1 ? '' : 's'} (sorted by similarity):</strong></p>
+        ${results.map((bird, index) => {
+          const scoredBird = scoredBirds.find(item => item.bird === bird);
+          const similarityScore = scoredBird ? Math.round(scoredBird.score) : 0;
+          const scoreColor = similarityScore >= 80 ? '#28a745' : similarityScore >= 60 ? '#ffc107' : '#dc3545';
+          
+          return `
+            <div class="bird-item">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <strong>Match #${index + 1}</strong>
+                <span style="background-color: ${scoreColor}; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+                  ${similarityScore}% Match
+                </span>
+              </div>
+              <strong>Date:</strong> ${highlightMatch(formatDate(bird.date), formatDate(searchCriteria.date))}<br>
+              <strong>Location:</strong> ${highlightMatch(bird.location, searchCriteria.location)}<br>
+              <strong>Colors:</strong> ${highlightColors(Array.isArray(bird.colors) ? bird.colors : [bird.color], searchCriteria.colors)}<br>
+              <strong>Size:</strong> ${highlightMatch(bird.size, searchCriteria.size)}<br>
+              <strong>Activity:</strong> ${highlightMatch(bird.activity, searchCriteria.activity)}<br>
+              ${bird.notes ? `<strong>Notes:</strong> ${bird.notes}` : ''}
+              ${bird.images && bird.images.length > 0 ? `
+                <br><strong>Images:</strong><br>
+                ${bird.images.map(img => `<img src="${img}" alt="Bird observation image">`).join('')}
+              ` : ''}
+            </div>
+          `;
+        }).join('')}
+      `;
+    }
+    
+    function highlightMatch(value, searchValue) {
+      if (!searchValue || !value) return value;
+      if (typeof value === 'string' && value.toLowerCase().includes(searchValue.toLowerCase())) {
+        return `<span class="match-highlight">${value}</span>`;
+      }
+      return value;
+    }
+    
+    function highlightColors(birdColors, searchColors) {
+      if (searchColors.length === 0) return birdColors.join(', ');
+      
+      return birdColors.map(color => {
+        if (searchColors.includes(color)) {
+          return `<span class="match-highlight">${color}</span>`;
+        }
+        return color;
+      }).join(', ');
+    }
+    
+    function clearSearch() {
+      document.getElementById("searchForm").reset();
+      document.getElementById("searchResults").style.display = "none";
+    }
+    
+    function showAllBirds() {
+      document.getElementById("searchResults").style.display = "none";
+      displayBirds();
+    }
+    
+    // Search form event listener
+    document.getElementById("searchForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      searchBirds();
+    });
+    
+    // Display birds on page load
+    displayBirds();
   </script>
 </body>
 </html>
